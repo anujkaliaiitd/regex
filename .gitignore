@@ -1,0 +1,8 @@
+libregex.so
+*.o
+src/tags
+test/test_api
+test/test_edge
+test/test_error
+test/test_list
+test/test_parse
