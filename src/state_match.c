@@ -6,17 +6,28 @@
 #include "state_pattern.h"
 #include "reg_stream.h"
 #include "reg_list.h"
+#include <time.h>
+#include <math.h>
 
 #include "regex.h"
 
 static int _match_dfa_state(struct reg_pattern* pattern, size_t node_pos, struct reg_stream* source);
 static int _match_nfa_state(struct reg_pattern* pattern, size_t node_pos, struct reg_stream* source);
+struct timespec start, end;
 
 int state_match(struct reg_pattern* pattern, const char* s, int len){
   assert(_match_nfa_state); // filter warning
 
   struct reg_stream* source = stream_new((const unsigned char*)s, len);
+  int t = ((rand() & 65535) == 65535);
+  if (t) { clock_gettime(CLOCK_REALTIME, &start);}
   int success = _match_dfa_state(pattern, pattern->min_dfa_start_state_pos, source);
+  if (t) {
+    clock_gettime(CLOCK_REALTIME, &end);
+    size_t tot_ns = (end.tv_sec - start.tv_sec) * 1000000000 + (end.tv_nsec - start.tv_nsec);
+    printf("regex match Overhead: Time per measurement = %.2f ns\n", (double)tot_ns);
+  }
+    
   stream_free(source);
   return success;
 }
@@ -37,6 +48,7 @@ static int _match_dfa_state(struct reg_pattern* pattern, size_t node_pos, struct
       size_t next_node_pos = path->next_node_pos;
 
       assert(range);
+      printf("range: %c, %c\n", (char)(range->begin), (char)(range->end));
       if(c >= range->begin && c<=range->end){ // range
         node_pos = next_node_pos;
         stream_next(source);

@@ -213,7 +213,7 @@ static struct reg_ast_node* _parse_repeated(struct reg_parse* p){
 inline static int _range_factor(struct reg_parse* p){
   int ret = at_char(p);
 
-  printf("_range_factor: %c\n", (char)ret);
+  //printf("_range_factor: %c\n", (char)ret);
   switch(ret){
     case '\\':{
       struct reg_ast_node* ep = _escape(p);

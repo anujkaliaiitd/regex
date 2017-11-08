@@ -17,7 +17,7 @@ struct reg_env {
 };
 
 
-inline struct reg_longjump** reg_get_exception(struct reg_env* env){
+struct reg_longjump** reg_get_exception(struct reg_env* env){
   return &(env->exception_chain);
 }
 

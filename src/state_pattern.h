@@ -71,8 +71,8 @@ int state_match(struct reg_pattern* pattern, const char* s, int len);
 
 
 // state op
-inline struct reg_edge* state_edge_pos(struct reg_pattern* pattern, size_t pos);
-inline struct reg_node* state_node_pos(struct reg_pattern* pattern, size_t pos);
+struct reg_edge* state_edge_pos(struct reg_pattern* pattern, size_t pos);
+struct reg_node* state_node_pos(struct reg_pattern* pattern, size_t pos);
 
 
 #endif

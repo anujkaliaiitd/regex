@@ -3,7 +3,7 @@
 #include "../src/reg_list.h"
 
 int main(int argc, char const *argv[]){
-  struct reg_list* list = list_new(sizeof(int), 1);
+  struct reg_list* list = list_new1(sizeof(int), 1);
 
   int a[] = {1, 2, 3, 4};
 

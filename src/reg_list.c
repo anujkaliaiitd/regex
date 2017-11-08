@@ -11,7 +11,7 @@ struct reg_list {
 };
 
 
-struct reg_list* list_new(size_t block, size_t count){
+struct reg_list* list_new1(size_t block, size_t count){
   struct reg_list* ret = malloc(sizeof(struct reg_list));
   ret->size = count;
   ret->block = block;
@@ -57,7 +57,7 @@ void* list_idx(struct reg_list* p, size_t pos){
 }
 
 
-void list_sort(struct reg_list* p, campar sort){
+void list_sort1(struct reg_list* p, campar sort){
   qsort(p->buf, p->len, p->block, sort);
 }
 
@@ -70,7 +70,7 @@ void list_sort_subset(struct reg_list* p, size_t begin_idx, size_t len, campar s
 
 struct reg_list* list_copy(struct reg_list* src){
   assert(src);
-  struct reg_list* ret = list_new(src->block, src->size);
+  struct reg_list* ret = list_new1(src->block, src->size);
   ret->len = src->len;
   memcpy(ret->buf, src->buf, src->block*src->len);
   return ret;

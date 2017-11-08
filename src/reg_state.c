@@ -32,7 +32,7 @@ struct reg_state* state_new(struct reg_env* env){
   ret->env = env;
 
   // init frame
-  ret->frame_list = list_new(sizeof(struct _range_frame), DEF_FRAMES);
+  ret->frame_list = list_new1(sizeof(struct _range_frame), DEF_FRAMES);
   return ret;
 }
 
@@ -50,11 +50,11 @@ void state_clear(struct reg_state* p){
 static inline struct reg_pattern* _new_pattern(struct reg_state* state){
   struct reg_pattern* ret = malloc(sizeof(struct reg_pattern));
   ret->state = state;
-  ret->edges_list = list_new(sizeof(struct reg_edge), DEF_EDGES);
+  ret->edges_list = list_new1(sizeof(struct reg_edge), DEF_EDGES);
 
-  ret->state_list = list_new(sizeof(struct reg_node), DEF_NODES);
+  ret->state_list = list_new1(sizeof(struct reg_node), DEF_NODES);
 
-  ret->eval_subset = list_new(sizeof(size_t), DEF_SUBSET_COUNT);
+  ret->eval_subset = list_new1(sizeof(size_t), DEF_SUBSET_COUNT);
 
   ret->start_state_pos = 0;
   ret->dfa_start_state_pos = 0;
@@ -79,7 +79,7 @@ struct reg_pattern* state_new_pattern(struct reg_state* p, struct reg_ast_node* 
   // prepare frame list
   list_clear(p->frame_list);
   _gen_frame(p, ast);
-  list_sort(p->frame_list, (campar)_campar);
+  list_sort1(p->frame_list, (campar)_campar);
 
   // prepare edge list
   list_clear(pattern->edges_list);

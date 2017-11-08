@@ -13,7 +13,7 @@ struct reg_longjump {
   struct reg_longjump* next;
 };
 
-inline struct reg_longjump** reg_get_exception(struct reg_env* env);
+struct reg_longjump** reg_get_exception(struct reg_env* env);
 
 void reg_painc(const char* str){
   printf("<painc>: %s\n", str);

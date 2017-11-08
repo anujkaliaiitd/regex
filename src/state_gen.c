@@ -81,7 +81,7 @@ static inline size_t _node_new(struct reg_pattern* pattern){
     .is_end = 0,
     .subset_tag = 0,
     .subset = NULL,
-    .edges = list_new(sizeof(struct _reg_path), DEF_EDGE),
+    .edges = list_new1(sizeof(struct _reg_path), DEF_EDGE),
   };
   size_t idx = list_add(pattern->state_list, &v);
   return idx + 1;
@@ -304,7 +304,7 @@ static int _campar(size_t* a, size_t*b){
 }
 
 static void _sort_subset(struct reg_list* subset){
-  list_sort(subset, (campar)_campar);
+  list_sort1(subset, (campar)_campar);
 }
 
 
@@ -496,7 +496,7 @@ static void _sort_minsubset(struct reg_list* minsubset, size_t begin_idx, size_t
 
 static struct reg_list* _new_minsubset(struct reg_pattern* pattern){
   size_t len = list_len(pattern->state_list) - pattern->dfa_start_state_pos + 1;
-  struct reg_list* minsubset = list_new(sizeof(struct min_node), len);
+  struct reg_list* minsubset = list_new1(sizeof(struct min_node), len);
 
   // foreach dfa node
   struct reg_node* v = NULL;
