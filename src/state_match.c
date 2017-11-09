@@ -21,14 +21,7 @@ int state_match(struct reg_pattern* pattern, const char* s, int len){
   assert(_match_nfa_state); // filter warning
 
   struct reg_stream* source = stream_new((const unsigned char*)s, len);
-  int t = ((rand() & 65535) == 65535);
-  if (t) { clock_gettime(CLOCK_REALTIME, &start);}
   int success = _match_dfa_state(pattern, pattern->min_dfa_start_state_pos, source);
-  if (t) {
-    clock_gettime(CLOCK_REALTIME, &end);
-    size_t tot_ns = (end.tv_sec - start.tv_sec) * 1000000000 + (end.tv_nsec - start.tv_nsec);
-    printf("regex match Overhead: Time per measurement = %.2f ns\n", (double)tot_ns);
-  }
     
   stream_free(source);
   return success;
@@ -42,8 +35,7 @@ static int _match_dfa_state(struct reg_pattern* pattern, size_t node_pos, struct
     assert(node != NULL);
   }
 
-  printf("_match_dfa_state: node_pos = %zu, state list size = %zu\n",
-      node_pos, list_len(pattern->state_list));
+  //printf("_match_dfa_state: node_pos = %zu, state list size = %zu\n", node_pos, list_len(pattern->state_list));
 
 #define MAX_NUM_STATES 255
   const size_t initial_dfa_node_pos = node_pos;
@@ -71,7 +63,7 @@ static int _match_dfa_state(struct reg_pattern* pattern, size_t node_pos, struct
       struct _reg_path* path = NULL;
 
       // This state is seen but not visited. Now visiting state_i.
-      printf("Visiting state %zu.\n", state_i);
+      //printf("Visiting state %zu.\n", state_i);
 
       assert(states[state_i] == NULL);
       states[state_i] = malloc(256 * sizeof(uint8_t));
@@ -88,13 +80,13 @@ static int _match_dfa_state(struct reg_pattern* pattern, size_t node_pos, struct
         assert(range != NULL);
 
         for (uint8_t c = (char)(range->begin); c <= (char)(range->end); c++) {
-          assert(states[state_i][c] == initial_dfa_node_pos;
+          assert(states[state_i][c] == initial_dfa_node_pos);
           states[state_i][c] = (uint8_t)next_node_pos;
-          printf("Adding edge state[%zu][%u] to state %zu.\n", state_i, c, next_node_pos);
+          //printf("Adding edge state[%zu][%u] to state %zu.\n", state_i, c, next_node_pos);
         }
 
         if (seen[next_node_pos] == 0) {
-          printf("Visiting new state %zu from node %zu.\n", next_node_pos, state_i);
+          //printf("Visiting new state %zu from node %zu.\n", next_node_pos, state_i);
           // Record that we "saw" a new state in this pass, so that we do
           // another pass. The next pass will "visit" this state (in the
           // traditional BFS visiting sense).
@@ -107,6 +99,25 @@ static int _match_dfa_state(struct reg_pattern* pattern, size_t node_pos, struct
     }
   }
 
+  int t = ((rand() & 65535) == 65535);
+  if (t) { clock_gettime(CLOCK_REALTIME, &start);}
+  for(; !stream_end(source);) {
+    unsigned char c = stream_char(source);
+    struct reg_node* node = state_node_pos(pattern, node_pos);
+    if (node->is_end && !pattern->is_match_tail) return 1;
+    if (!states[node_pos]) return 0;
+    size_t next_node_pos = states[node_pos][c];
+    node_pos = next_node_pos;
+    stream_next(source);
+  }
+  if (t) {
+    clock_gettime(CLOCK_REALTIME, &end);
+    size_t tot_ns = (end.tv_sec - start.tv_sec) * 1000000000 + (end.tv_nsec - start.tv_nsec);
+    printf("regex match Overhead: Time per measurement = %.2f ns\n", (double)tot_ns);
+  }
+  return state_node_pos(pattern, node_pos)->is_end;
+
+  /*
   for(;!stream_end(source);){
     printf("node_pos = %zu.\n", node_pos);
     // dump edge
@@ -135,6 +146,7 @@ static int _match_dfa_state(struct reg_pattern* pattern, size_t node_pos, struct
 
   // match is end of source
   return state_node_pos(pattern, node_pos)->is_end;
+  */
 }
 
 
