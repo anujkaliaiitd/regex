@@ -1,6 +1,7 @@
 #ifndef _REGEX_H_
 #define _REGEX_H_
 #include <stddef.h>
+#include <stdint.h>
 
 struct reg_env;
 struct reg_pattern;
@@ -13,5 +14,6 @@ void reg_free_pattern(struct reg_pattern* pattern);
 struct reg_longjump** reg_get_exception(struct reg_env* env);
 
 int reg_match(struct reg_pattern* pattern, const char* source, int len);
+uint8_t** dfa_2D_vector(struct reg_pattern* pattern);
 
 #endif

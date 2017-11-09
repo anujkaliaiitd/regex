@@ -3,6 +3,12 @@
 
 #include <stddef.h>
 
+struct reg_stream{
+  const unsigned char* buff;
+  size_t size;
+  size_t pos;
+};
+
 struct reg_stream;
 
 struct reg_stream* stream_new(const unsigned char* str, size_t size);
