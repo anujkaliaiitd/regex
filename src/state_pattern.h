@@ -2,6 +2,7 @@
 #define _REG_STATE_pattern_
 
 #include "reg_parse.h"
+#include <stdint.h>
 
 /*
   the interior private headfile
@@ -68,7 +69,24 @@ struct reg_pattern{
 
 void state_gen(struct reg_pattern* pattern, struct reg_ast_node* ast);
 int state_match(struct reg_pattern* pattern, const char* s, int len);
+int state_match_opt(struct reg_pattern* pattern, const char* s, int len);
 
+// Maximum number of DFA states, less than 65535
+#define MONETDB_MAX_DFA_STATES 300
+
+struct fast_dfa_state_t {
+  uint8_t is_match;  // Is this state a matching state?
+  uint16_t *transition_arr;  // Array of 256 transitions
+};
+
+// The DFA is just an array of states
+struct fast_dfa_t {
+  uint16_t root_state;  // Index of the root state
+  struct fast_dfa_state_t state_arr[MONETDB_MAX_DFA_STATES];
+};
+
+// Post-process the DFA represented in @pattern into @fast_dfa
+void postprocess_dfa(struct reg_pattern* pattern, struct fast_dfa_t *fast_dfa);
 
 // state op
 struct reg_edge* state_edge_pos(struct reg_pattern* pattern, size_t pos);

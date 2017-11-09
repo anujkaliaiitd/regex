@@ -73,7 +73,8 @@ REG_API void reg_free_pattern(struct reg_pattern* pattern){
 
 
 REG_API int reg_match(struct reg_pattern* pattern, const char* source, int len){
-  return state_match(pattern, source, len);
+  //return state_match(pattern, source, len);
+  return state_match_opt(pattern, source, len);
 }
 
 
