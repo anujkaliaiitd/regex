@@ -21,6 +21,7 @@ reg_list.c \
 reg_state.c \
 state_gen.c \
 state_match.c \
+ds_queue.c \
 regex.c \
 reg_error.c 
 REGEX_LIB = $(addprefix src/, $(_REGEX_LIB))
