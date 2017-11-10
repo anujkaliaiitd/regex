@@ -75,7 +75,7 @@ REG_API int reg_match(struct reg_pattern *pattern, const char *source,
   return state_match_opt(pattern, source, len);
 }
 
-REG_API struct fast_dfa_t *only_reg_new_pattern(struct reg_env *env,
+REG_API struct fast_dfa_t *lvzixun_regex_get_fast_dfa(struct reg_env *env,
                                                 const char *rule) {
   struct reg_pattern *pattern = reg_new_pattern(env, rule);
   struct fast_dfa_t *fast_dfa =
@@ -84,7 +84,7 @@ REG_API struct fast_dfa_t *only_reg_new_pattern(struct reg_env *env,
   return fast_dfa;
 }
 
-REG_API int only_reg_match(struct fast_dfa_t *fast_dfa, const char *source,
+REG_API int lvzixun_fast_dfa_reg_match(struct fast_dfa_t *fast_dfa, const char *source,
                            int len) {
-  return only_state_match_opt(fast_dfa, source, len);
+  return lvzixun_fast_dfa_state_match(fast_dfa, source, len);
 }

@@ -51,7 +51,7 @@ int state_match_opt(struct reg_pattern *pattern, const char *s, int len) {
   return 0;
 }
 
-int only_state_match_opt(struct fast_dfa_t *fast_dfa, const char *s, int len) {
+int lvzixun_fast_dfa_state_match(struct fast_dfa_t *fast_dfa, const char *s, int len) {
   // struct fast_dfa_t fast_dfa;
   // postprocess_dfa(pattern, &fast_dfa);
   // Now we must not use @pattern anymore
@@ -153,7 +153,7 @@ static int _match_dfa_state(struct reg_pattern *pattern, size_t node_pos,
   // node_pos, list_len(pattern->state_list));
 
   for (; !stream_end(source);) {
-    printf("node_pos = %zu.\n", node_pos);
+    //printf("node_pos = %zu.\n", node_pos);
     // dump edge
     struct reg_node *node = state_node_pos(pattern, node_pos);
     struct reg_list *edges = node->edges;
@@ -169,8 +169,8 @@ static int _match_dfa_state(struct reg_pattern *pattern, size_t node_pos,
       size_t next_node_pos = path->next_node_pos;
 
       assert(range);
-      printf("range: %c, %c. next node = %zu.\n", (char)(range->begin),
-             (char)(range->end), next_node_pos);
+      //printf("range: %c, %c. next node = %zu.\n", (char)(range->begin),
+             //(char)(range->end), next_node_pos);
       if (c >= range->begin && c <= range->end) { // range
         node_pos = next_node_pos;
         stream_next(source);

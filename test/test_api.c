@@ -17,8 +17,8 @@ int main(int argc, char const *argv[]){
   //struct reg_pattern* pattern = reg_new_pattern(env, rule);
   //int success = reg_match(pattern, source, strlen(source));
 
-  struct fast_dfa_t* fast_dfa = only_reg_new_pattern(env, rule);
-  int success = only_reg_match(fast_dfa, source, strlen(source));
+  struct fast_dfa_t* fast_dfa = lvzixun_regex_get_fast_dfa(env, rule);
+  int success = lvzixun_fast_dfa_reg_match(fast_dfa, source, strlen(source));
 
   printf("-------------- reslut -----------\n success: %d\n", success);
   reg_close_env(env);
