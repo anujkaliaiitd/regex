@@ -51,19 +51,22 @@ int state_match_opt(struct reg_pattern *pattern, const char *s, int len) {
   return 0;
 }
 
-int lvzixun_fast_dfa_state_match(struct fast_dfa_t *fast_dfa, const char *s, int len) {
+int lvzixun_fast_dfa_state_match(struct fast_dfa_t *fast_dfa, const char *s) {
   // struct fast_dfa_t fast_dfa;
   // postprocess_dfa(pattern, &fast_dfa);
   // Now we must not use @pattern anymore
 
   int cur_state = fast_dfa->root_state;
-  for (int i = 0; i < len; i++) {
+  int i = 0;
+  while(s[i] != '\0') {
+  //for (int i = 0; i < len; i++) {
     if (fast_dfa->state_arr[cur_state].is_match == 1)
       return 1;
     uint8_t c = (uint8_t)s[i];
 
     assert(fast_dfa->state_arr[cur_state].transition_arr != NULL);
     cur_state = fast_dfa->state_arr[cur_state].transition_arr[c];
+    i++;
   }
 
   if (fast_dfa->state_arr[cur_state].is_match == 1)
