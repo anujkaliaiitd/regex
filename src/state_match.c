@@ -84,9 +84,7 @@ void lvzixun_fast_dfa_state_match_batch(const struct fast_dfa_t *fast_dfa, char 
   }
 
   for (int i = 0; i < 8; i++) {
-    if (fast_dfa->bool_matching[cur_state[i]] == 1) {
-      ret[i] = 1;
-    }
+    ret[i] = (fast_dfa->bool_matching[cur_state[i]] == 1);
   }
 }
 
