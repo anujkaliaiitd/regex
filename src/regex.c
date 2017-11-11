@@ -87,3 +87,7 @@ REG_API struct fast_dfa_t *lvzixun_regex_get_fast_dfa(struct reg_env *env,
 REG_API int lvzixun_fast_dfa_reg_match(struct fast_dfa_t *fast_dfa, const char *source) {
   return lvzixun_fast_dfa_state_match(fast_dfa, source);
 }
+
+REG_API void lvzixun_fast_dfa_reg_match_batch(struct fast_dfa_t *fast_dfa, char *source[8], int ret[8]) {
+  lvzixun_fast_dfa_state_match_batch(fast_dfa, source, ret);
+}

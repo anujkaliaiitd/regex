@@ -56,6 +56,40 @@ int lvzixun_fast_dfa_state_match(struct fast_dfa_t *fast_dfa, const char *s) {
   return 0;
 }
 
+void lvzixun_fast_dfa_state_match_batch(const struct fast_dfa_t *fast_dfa, char *s[8], int ret[8]) {
+  int cur_state[8];
+  int finished[8];
+  int char_index[8];
+  int tot_finished = 0;
+  for (int i = 0 ; i < 8; i++) {
+    cur_state[i] = fast_dfa->root_state;
+    finished[i] = 0;
+    char_index[i] = 0;
+  }
+
+  while (tot_finished != 8) {
+    for (int i = 0; i < 8; i++) {
+      if (finished[i] == 1) continue;
+
+      uint8_t c = (uint8_t)s[i][char_index[i]];
+      if (c == 0) {
+        finished[i] = 1;
+        tot_finished++;
+        continue;
+      }
+
+      cur_state[i] = fast_dfa->state_arr[cur_state[i]].transition_arr[c];
+      char_index[i]++;
+    }
+  }
+
+  for (int i = 0; i < 8; i++) {
+    if (fast_dfa->bool_matching[cur_state[i]] == 1) {
+      ret[i] = 1;
+    }
+  }
+}
+
 void postprocess_dfa(struct reg_pattern *pattern, struct fast_dfa_t *fast_dfa) {
   assert(pattern->min_dfa_start_state_pos <= MONETDB_MAX_DFA_STATES);
   fast_dfa->root_state = (uint8_t)pattern->min_dfa_start_state_pos;
