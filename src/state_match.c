@@ -31,57 +31,38 @@ int state_match(struct reg_pattern *pattern, const char *s, int len) {
   return success;
 }
 
-int state_match_opt(struct reg_pattern *pattern, const char *s, int len) {
-  struct fast_dfa_t fast_dfa;
-  postprocess_dfa(pattern, &fast_dfa);
-  // Now we must not use @pattern anymore
-
-  int cur_state = fast_dfa.root_state;
-  for (int i = 0; i < len; i++) {
-    if (fast_dfa.state_arr[cur_state].is_match == 1)
-      return 1;
-    uint8_t c = (uint8_t)s[i];
-
-    assert(fast_dfa.state_arr[cur_state].transition_arr != NULL);
-    cur_state = fast_dfa.state_arr[cur_state].transition_arr[c];
-  }
-
-  if (fast_dfa.state_arr[cur_state].is_match == 1)
-    return 1;
-  return 0;
-}
-
 int lvzixun_fast_dfa_state_match(struct fast_dfa_t *fast_dfa, const char *s) {
   // struct fast_dfa_t fast_dfa;
   // postprocess_dfa(pattern, &fast_dfa);
   // Now we must not use @pattern anymore
 
   int cur_state = fast_dfa->root_state;
-  int i = 0;
-  while(s[i] != '\0') {
-  //for (int i = 0; i < len; i++) {
-    if (fast_dfa->state_arr[cur_state].is_match == 1)
-      return 1;
+  int len = strlen(s);
+
+  for (int i = 0 ; i < len; i++) {
+    //printf("cur state = %d, char = %c, len = %d\n", cur_state, s[i], len);
+    //if (fast_dfa->bool_matching[cur_state] == 1)
+    //  return 1;
     uint8_t c = (uint8_t)s[i];
 
-    assert(fast_dfa->state_arr[cur_state].transition_arr != NULL);
+    //assert(fast_dfa->state_arr[cur_state].transition_arr != NULL);
     cur_state = fast_dfa->state_arr[cur_state].transition_arr[c];
-    i++;
   }
 
-  if (fast_dfa->state_arr[cur_state].is_match == 1)
+  //printf("end state = %d\n", cur_state);
+
+  if (fast_dfa->bool_matching[cur_state] == 1)
     return 1;
   return 0;
 }
 
 void postprocess_dfa(struct reg_pattern *pattern, struct fast_dfa_t *fast_dfa) {
   assert(pattern->min_dfa_start_state_pos <= MONETDB_MAX_DFA_STATES);
-  fast_dfa->root_state = (uint16_t)pattern->min_dfa_start_state_pos;
+  fast_dfa->root_state = (uint8_t)pattern->min_dfa_start_state_pos;
 
   // Set all DFA states to non-matching and all transition arrays to NULL
   for (size_t i = 0; i < MONETDB_MAX_DFA_STATES; i++) {
-    fast_dfa->state_arr[i].is_match = 0;
-    fast_dfa->state_arr[i].transition_arr = NULL;
+    fast_dfa->bool_matching[i] = 0;
   }
 
   // Initialize the BFS
@@ -102,21 +83,31 @@ void postprocess_dfa(struct reg_pattern *pattern, struct fast_dfa_t *fast_dfa) {
     // cur_state_i is unvisited, so it's uninitialized
     struct fast_dfa_state_t *cur_fast_dfa_state =
         &fast_dfa->state_arr[cur_state_i];
-    assert(cur_fast_dfa_state->is_match == 0);
-    assert(cur_fast_dfa_state->transition_arr == NULL);
+    assert(fast_dfa->bool_matching[cur_state_i] == 0);
 
     struct reg_node *node = state_node_pos(pattern, cur_state_i);
     assert(node != NULL);
 
-    // Initialize this state. Set all transitions to root.
-    cur_fast_dfa_state->is_match = node->is_end;
-    cur_fast_dfa_state->transition_arr = malloc(256 * sizeof(uint16_t));
+    // Initialize this state
+    fast_dfa->bool_matching[cur_state_i] = node->is_end;
+
+    //printf("Visiting state %d. Is match = %d.\n",
+    //    cur_state_i, node->is_end);
+
+    // If this is a matching state, set all transitions to self
+    if (node->is_end == 1) {
+      for (size_t t_i = 0; t_i < 256; t_i++) {
+        cur_fast_dfa_state->transition_arr[t_i] = cur_state_i;
+      }
+
+      visited[cur_state_i] = 1;
+      continue;
+    }
+
     for (size_t t_i = 0; t_i < 256; t_i++) {
       cur_fast_dfa_state->transition_arr[t_i] = fast_dfa->root_state;
     }
 
-    // printf("Visiting state %d. Is match = %u.\n",
-    // cur_state_i, cur_fast_dfa_state->is_match);
 
     struct reg_list *edges = node->edges;
     struct _reg_path *path = NULL;
@@ -128,11 +119,12 @@ void postprocess_dfa(struct reg_pattern *pattern, struct fast_dfa_t *fast_dfa) {
           &(state_edge_pos(pattern, path->edge_pos)->range);
       assert(range != NULL);
 
+      //printf("Adding edge state[%d][%c-%c] to state %d.\n",
+      //    cur_state_i, (char)range->begin, (char)range->end, next_node_pos);
+
       for (uint8_t c = (char)(range->begin); c <= (char)(range->end); c++) {
         assert(cur_fast_dfa_state->transition_arr[c] == fast_dfa->root_state);
-        cur_fast_dfa_state->transition_arr[c] = (uint16_t)next_node_pos;
-        // printf("Adding edge state[%d][%u] to state %d.\n",
-        // cur_state_i, c, next_node_pos);
+        cur_fast_dfa_state->transition_arr[c] = (uint8_t)next_node_pos;
       }
 
       // Add unvisited state to BFS queue

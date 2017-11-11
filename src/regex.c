@@ -71,8 +71,8 @@ REG_API void reg_free_pattern(struct reg_pattern *pattern) {
 
 REG_API int reg_match(struct reg_pattern *pattern, const char *source,
                       int len) {
-  // return state_match(pattern, source, len);
-  return state_match_opt(pattern, source, len);
+  return state_match(pattern, source, len);
+  //return state_match_opt(pattern, source, len);
 }
 
 REG_API struct fast_dfa_t *lvzixun_regex_get_fast_dfa(struct reg_env *env,

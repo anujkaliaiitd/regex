@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS += -g -O2  -Wall
+CFLAGS += -g -O3 -Wall -march=native
 AR = ar rcu
 
 UNAME_S := $(shell uname -s)

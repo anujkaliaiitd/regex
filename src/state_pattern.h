@@ -71,16 +71,16 @@ int state_match(struct reg_pattern *pattern, const char *s, int len);
 int state_match_opt(struct reg_pattern *pattern, const char *s, int len);
 
 // Maximum number of DFA states, less than 65535
-#define MONETDB_MAX_DFA_STATES 300
+#define MONETDB_MAX_DFA_STATES 255
 
 struct fast_dfa_state_t {
-  uint8_t is_match;         // Is this state a matching state?
-  uint16_t *transition_arr; // Array of 256 transitions
+  uint8_t transition_arr[256]; // Array of 256 transitions
 };
 
 // The DFA is just an array of states
 struct fast_dfa_t {
-  uint16_t root_state; // Index of the root state
+  uint8_t root_state; // Index of the root state
+  uint8_t bool_matching[MONETDB_MAX_DFA_STATES];
   struct fast_dfa_state_t state_arr[MONETDB_MAX_DFA_STATES];
 };
 
