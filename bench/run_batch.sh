@@ -1,1 +1,1 @@
-sudo perf stat numactl --physcpubind=0 --membind=0 ./bench .*Strasse.* $str
+sudo numactl --physcpubind=0 --membind=0 ./bench_batch .*Strasse.*

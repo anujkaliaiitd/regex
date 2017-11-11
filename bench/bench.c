@@ -6,7 +6,7 @@
 #include <string.h>
 #include <time.h>
 
-#define NUM_ITERS 1000000
+#define NUM_ITERS 10000000
 
 int main(int argc, char const *argv[]) {
   assert(argc >= 3);

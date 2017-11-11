@@ -7,3 +7,4 @@ test/test_error
 test/test_list
 test/test_parse
 bench/bench
+bench/bench_batch
