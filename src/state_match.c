@@ -50,10 +50,7 @@ int lvzixun_fast_dfa_state_match(struct fast_dfa_t *fast_dfa, const char *s) {
   }
 
   //printf("end state = %d\n", cur_state);
-
-  if (fast_dfa->bool_matching[cur_state] == 1)
-    return 1;
-  return 0;
+  return (fast_dfa->bool_matching[cur_state] == 1);
 }
 
 void postprocess_dfa(struct reg_pattern *pattern, struct fast_dfa_t *fast_dfa) {
