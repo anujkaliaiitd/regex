@@ -87,6 +87,7 @@ struct fast_dfa_t {
 // Post-process the DFA represented in @pattern into @fast_dfa
 void postprocess_dfa(struct reg_pattern *pattern, struct fast_dfa_t *fast_dfa);
 int lvzixun_fast_dfa_state_match(struct fast_dfa_t *fast_dfa, const char *s);
+void lvzixun_fast_dfa_state_match_batch(const struct fast_dfa_t *fast_dfa, char *s[8], int ret[8]);
 
 // state op
 struct reg_edge *state_edge_pos(struct reg_pattern *pattern, size_t pos);
