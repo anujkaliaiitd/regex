@@ -121,7 +121,7 @@ void postprocess_dfa(struct reg_pattern *pattern, struct fast_dfa_t *fast_dfa) {
     fast_dfa->bool_matching[cur_state_i] = node->is_end;
 
     //printf("Visiting state %d. Is match = %d.\n",
-    //    cur_state_i, node->is_end);
+        //cur_state_i, node->is_end);
 
     // If this is a matching state, set all transitions to self
     if (node->is_end == 1) {
@@ -148,9 +148,11 @@ void postprocess_dfa(struct reg_pattern *pattern, struct fast_dfa_t *fast_dfa) {
           &(state_edge_pos(pattern, path->edge_pos)->range);
       assert(range != NULL);
 
-      //printf("Adding edge state[%d][%c-%c] to state %d.\n",
-      //    cur_state_i, (char)range->begin, (char)range->end, next_node_pos);
-
+      //printf("Adding edge state[%d][%c-%lu] to state %d.\n",
+      //    cur_state_i, (char)range->begin, (size_t)range->end, next_node_pos);
+      if ((size_t)range->end == 255) {
+        range->end = 127;
+      }
       for (uint8_t c = (char)(range->begin); c <= (char)(range->end); c++) {
         assert(cur_fast_dfa_state->transition_arr[c] == fast_dfa->root_state);
         cur_fast_dfa_state->transition_arr[c] = (uint8_t)next_node_pos;
