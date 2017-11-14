@@ -85,6 +85,28 @@ void lvzixun_fast_dfa_state_match_batch(const struct fast_dfa_t *fast_dfa, char 
   }
 }
 
+void lvzixun_fast_dfa_state_match_batch_same_len(
+    const struct fast_dfa_t *fast_dfa, char *s[8], int ret[8]) {
+  int cur_state[8];
+  for (int batch_i = 0 ; batch_i < 8; batch_i++) {
+    cur_state[batch_i] = fast_dfa->root_state;
+  }
+
+  int common_len = strlen(s[0]);
+
+  for (int char_i = 0; char_i < common_len; char_i++) {
+    for (int batch_i = 0; batch_i < 8; batch_i++) {
+      uint8_t c = (uint8_t)s[batch_i][char_i];
+      cur_state[batch_i] =
+        fast_dfa->state_arr[cur_state[batch_i]].transition_arr[c];
+    }
+  }
+
+  for (int batch_i = 0; batch_i < 8; batch_i++) {
+    ret[batch_i] = (fast_dfa->bool_matching[cur_state[batch_i]] == 1);
+  }
+}
+
 void postprocess_dfa(struct reg_pattern *pattern, struct fast_dfa_t *fast_dfa) {
   assert(pattern->min_dfa_start_state_pos <= MONETDB_MAX_DFA_STATES);
   fast_dfa->root_state = (uint8_t)pattern->min_dfa_start_state_pos;
@@ -120,8 +142,7 @@ void postprocess_dfa(struct reg_pattern *pattern, struct fast_dfa_t *fast_dfa) {
     // Initialize this state
     fast_dfa->bool_matching[cur_state_i] = node->is_end;
 
-    //printf("Visiting state %d. Is match = %d.\n",
-        //cur_state_i, node->is_end);
+    //printf("Visiting state %d. Is match = %d.\n", cur_state_i, node->is_end);
 
     // If this is a matching state, set all transitions to self
     if (node->is_end == 1) {
@@ -148,12 +169,10 @@ void postprocess_dfa(struct reg_pattern *pattern, struct fast_dfa_t *fast_dfa) {
           &(state_edge_pos(pattern, path->edge_pos)->range);
       assert(range != NULL);
 
-      //printf("Adding edge state[%d][%c-%lu] to state %d.\n",
-      //    cur_state_i, (char)range->begin, (size_t)range->end, next_node_pos);
-      if ((size_t)range->end == 255) {
-        range->end = 127;
-      }
-      for (uint8_t c = (char)(range->begin); c <= (char)(range->end); c++) {
+      //printf("Adding edge state[%d][%u-%u] to state %d. root state = %d\n",
+          //cur_state_i, (uint8_t)range->begin, (uint8_t)range->end,
+          //next_node_pos, fast_dfa->root_state);
+      for (int c = range->begin; c <= range->end; c++) {
         assert(cur_fast_dfa_state->transition_arr[c] == fast_dfa->root_state);
         cur_fast_dfa_state->transition_arr[c] = (uint8_t)next_node_pos;
       }

@@ -31,7 +31,8 @@ int main(int argc, char const *argv[]) {
   int ret[8];
   int success = 0;
   for (int i = 0; i < NUM_ITERS; i++) {
-    lvzixun_fast_dfa_reg_match_batch(fast_dfa, source_batch, ret);
+    lvzixun_fast_dfa_state_match_batch_same_len(fast_dfa, source_batch, ret);
+    //lvzixun_fast_dfa_reg_match_batch(fast_dfa, source_batch, ret);
     success += ret[0];
   }
 
