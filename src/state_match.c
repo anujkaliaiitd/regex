@@ -53,6 +53,40 @@ int lvzixun_fast_dfa_state_match(struct fast_dfa_t *fast_dfa, const char *s) {
   return (fast_dfa->bool_matching[cur_state] == 1);
 }
 
+// Instead of doing a DFA match, just sum the strings
+void lvzixun_fast_dfa_state_sum_batch(const struct fast_dfa_t *fast_dfa, char *s[8], int ret[8]) {
+  int sum[8];
+  int finished[8];
+  int char_index[8];
+  int tot_finished = 0;
+
+  for (int i = 0; i < 8; i++) {
+    sum[i] = 0;
+    finished[i] = 0;
+    char_index[i] = 0;
+  }
+
+  while (tot_finished != 8) {
+    for (int i = 0; i < 8; i++) {
+      if (finished[i] == 1) continue;
+
+      uint8_t c = (uint8_t)s[i][char_index[i]];
+      if (c == 0) {
+        finished[i] = 1;
+        tot_finished++;
+        continue;
+      }
+
+      sum[i] += (uint8_t)s[i][char_index[i]];
+      char_index[i]++;
+    }
+  }
+
+  for (int i = 0; i < 8; i++) {
+    ret[i] = ((sum[i] & 2) == 0);
+  }
+}
+
 void lvzixun_fast_dfa_state_match_batch(const struct fast_dfa_t *fast_dfa, char *s[8], int ret[8]) {
   int cur_state[8];
   int finished[8];

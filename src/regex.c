@@ -91,3 +91,7 @@ REG_API int lvzixun_fast_dfa_reg_match(struct fast_dfa_t *fast_dfa, const char *
 REG_API void lvzixun_fast_dfa_reg_match_batch(struct fast_dfa_t *fast_dfa, char *source[8], int ret[8]) {
   lvzixun_fast_dfa_state_match_batch(fast_dfa, source, ret);
 }
+
+REG_API void lvzixun_fast_dfa_reg_sum_batch(struct fast_dfa_t *fast_dfa, char *source[8], int ret[8]) {
+  lvzixun_fast_dfa_state_sum_batch(fast_dfa, source, ret);
+}
